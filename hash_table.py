@@ -138,5 +138,69 @@ class Author:
 
         return False
 
+class MemberNode:
+    def __init__(self, member_id, name, borrowed=None, next=None):
+        self.member_id = member_id
+        self.name = name
+        self.borrowed = borrowed if borrowed else []
+        self.next = next
+
 class Member:
-    /
+    def __init__(self, m = 50):
+        self.m = m
+        self.table = [None] * m
+        self.n = 0
+
+    def hashfunc(self, member_id):
+        member_id = member_id.strip().lower()
+        sum=0
+
+        for char in member_id:
+            sum += ord(char)
+
+        return sum % self.m
+    
+    def add(self, member_id, name):
+        index = self.hashfunc(member_id)
+        current = self.table[index]
+
+        while current:
+            if current.member_id == member_id:
+                print("Member already exists")
+                return False
+            current = current.next
+        
+        new_node = MemberNode(member_id, name, next=self.table[index])
+        self.table[index] = new_node
+        self.n += 1
+        return True
+    
+    def search(self, member_id):
+        index = self.hashfunc(member_id)
+        current = self.table[index]
+
+        while current:
+            if current.member_id == member_id:
+                return current
+            current = current.next
+
+        return None
+    
+    def delete(self, member_id):
+        index = self.hashfunc(member_id)
+
+        current = self.table[index]
+        prev = None
+
+        while current:
+          if current.member_id == member_id:
+            if prev:
+              prev.next = current.next
+            else:
+              self.table[index] = current.next
+            self.n -= 1
+            return True
+          prev = current
+          current = current.next
+
+        return False
