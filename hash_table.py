@@ -1,40 +1,32 @@
 class Node:
-    def __init__(self,item,value,next):
-        self.item=item
-        self.value=value
+    def __init__(self,book_t,isbn,next=None):
+        self.book_t=book_t
+        self.isbn=isbn
         self.next=next
 class Title_Index:
-    def __init__(self):
+    def __init__(self,m):
        
-        self.array=[[] for _ in range(m)]#shortcut in python 
+        self.array=[None]*m 
         self.m=m
         self.n=0
         self.lf=self.n/self.m
-    def hashfunc(book_t,m):
-         book_t=book_t.strip()
-         book_t=book_t.lower()
+    def hashfunc(self,book_t):
+         book_t=book_t.strip().lower()
          sum=0
          for char in book_t:
                  sum=ord(char)+sum 
-         return sum%m 
-    def insert(self,book_t,isbn=None):
-          index=Title_Index.hashfunc(book_t,self.m)
-          if len(self.array[index]) == 0:
-            new_node = Node(book_t,isbn)
-            self.array[index].append(new_node)
-            self.n += 1
-          else:
-               current = self.array[index][0]
-               prev = None
-               while current is not None:
-                 if current.book_t == book_t:
-                  
+         return sum%self.m 
+    def insert(self,book_t,isbn):
+          book_t=book_t.strip().lower()
+          index=self.hashfunc(book_t)
+          current=self.array[index]
+          while current:
+                 if current.book_t == book_t:                
                    return
-                 prev = current
                  current = current.next
-               new_node = Node(book_t, isbn)
-               prev.next = new_node
-               self.n += 1
+          new_node = Node(book_t, isbn,self.array[index])
+          self.array[index] = new_node
+          self.n += 1
           lf=self.n/self.m
           if lf>0.75 :
                print ("need to resize")   
@@ -42,39 +34,52 @@ class Title_Index:
     def resize(self):
           old_array=self.array
           self.m=self.m*2
-          self.array = [[] for _ in range(self.m)]
+          self.array = [None]*self.m
           self.n = 0
-          for bucket in old_array:
-            if len(bucket) > 0:
-                cores_bucket = bucket[0]
-                while cores_bucket is not None:
-                    self.insert(cores_bucket.book_t, cores_bucket.isbn)
-                    cores_bucket = cores_bucket.next   
+          for head in old_array:
+            current = head
+            while current is not None:
+                self.insert(current.book_t, current.isbn)
+                current = current.next
 
 
     def contains(self,book_t):
-         index=Title_Index.hashfunc(book_t,self.m)
-         if len(self.array[index]) > 0:
-            cores_bucket = self.array[index][0] 
-         else:
-            cores_bucket = None
-         while cores_bucket is not None:
-            if cores_bucket.book_t == book_t:
+         book_t=book_t.strip().lower()
+         index=self.hashfunc(book_t)
+         current = self.array[index]
+         while current is not None:
+            if current.book_t == book_t:
                 return True
-            cores_bucket = cores_bucket.next   
+            current = current.next
          return False
+
+        
     def delete(self,book_t):
-        index=Title_Index.hashfunc(book_t,self.m)
-        if len(self.array[index]) == 0:
+        book_t=book_t.strip().lower()
+        index=self.hashfunc(book_t)
+        current = self.array[index]
+        prev = None
+        if current is None:
             print("invalid entry")
-        else:
-               current = self.array[index][0]
-               prev = None
-               while current is not None:
-                if current.book_t == book_t:
-                   prev.next = current.next
-                   self.n -= 1
-                   return True
-                prev = current
-                current = current.next
-               return False   
+            return False
+        while current is not None:
+                   if current.book_t == book_t:
+                     if prev is None:
+                        self.array[index] = current.next
+                     else:
+                        prev.next = current.next
+                     self.n -= 1
+                     return True
+                   prev = current
+                   current = current.next
+        return False
+
+                  
+                   return
+                 prev = current"""  
+        
+
+
+
+
+
