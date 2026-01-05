@@ -3,7 +3,8 @@ class Node:
         self.book_t=book_t
         self.isbn=isbn
         self.next=next
-class Title_Index:
+
+class Title:
     def __init__(self,m):
        
         self.array=[None]*m 
@@ -74,12 +75,68 @@ class Title_Index:
                    current = current.next
         return False
 
-                  
-                   return
-                 prev = current"""  
+class Author:
+    def __init__(self, m = 267):
+        self.m = m
+        self.table=[None for _ in range(m)]
+        self.n=0
+    
+    def hashfunc(self, author):
+        author = author.strip().lower()
+        sum=0
+
+        for char in author:
+            sum += ord(char)
+
+        return sum % self.m 
+    
+    def add(self, author, isbn):
+        index = self.hashfunc(author)
         
+        current = self.table[index]
 
+        while current:
+            if current.book_t == author:
+                new_isbn = Node(isbn, None, current.isbn)
+                current.isbn = new_isbn
+                return
+            current = current.next
+        
+        isbn_node = Node(isbn, None)
+        new_node = Node(author, isbn_node, self.table[index])
+        self.table[index] = new_node
+        self.n += 1
 
+    def search(self, author):
+        index = self.hashfunc(author)
 
+        current = self.table[index]
 
+        while current:
+            if current.book_t == author:
+                return current.isbn
+            current = current.next
 
+        return None
+    
+    def delete_Author(self, author):
+        index = self.hashfunc(author)
+
+        current = self.table[index]
+        prev = None
+
+        while current:
+          if current.book_t == author:
+            if prev:
+              prev.next = current.next
+            else:
+              self.table[index] = current.next
+            self.n -= 1
+            return True
+          prev = current
+          current = current.next
+
+        return False
+
+class Member:
+    /
