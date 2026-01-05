@@ -1,7 +1,10 @@
 class BookNode: #basic variables
-    def __init__ (self , isbn, book_data):
+    def __init__ (self , isbn, title, author, year, category,copies):
         self.isbn = isbn
-        self.book_data = book_data
+        self.book_data = {
+            'title': title, 'author': author, 'year': year,
+            'category': category, 'available_copies': int(copies)
+        }
         self.left = None
         self.right = None
         self.height = 1
@@ -94,9 +97,9 @@ class BookCatalog: #avl tree
         
     def search(self,root,isbn):
         if root is None:
-            return False
+            return None
         if isbn == root.isbn:
-            return True
+            return root.book_data
         elif isbn< root.isbn:
             return self.search(root.left, isbn)
         else:
