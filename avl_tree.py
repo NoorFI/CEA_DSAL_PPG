@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jan  5 14:58:36 2026
+
+@author: Fate
+"""
+
 class BookNode: #basic variables
     def __init__ (self , isbn, book_data):
         self.isbn = isbn
@@ -6,17 +13,17 @@ class BookNode: #basic variables
         self.right = None
         self.height = 1
         
-        
 class BookCatalog: #avl tree
-    def get_height(self, BookNode):
-        if not BookNode:
+
+    def get_height(self, node):
+        if not node:
             return 0
-        return BookNode.height
+        return node.height
     
-    def get_balance(self, BookNode):
-        if not BookNode:
+    def get_balance(self, node):
+        if not node:
             return 0 
-        return self.get_height(BookNode.left) - self.get_height(BookNode.right)
+        return self.get_height(node.left) - self.get_height(node.right)
 
     def rotate_right(self, y):
         #checking the node's position
@@ -46,9 +53,9 @@ class BookCatalog: #avl tree
         #insertion
         if not root:
             return BookNode(isbn, book_data)
-        if isbn < root.isbn:
+        if isbn <root.isbn:
             root.left = self.insert(root.left, isbn, book_data)
-        elif isbn > root.isbn:
+        elif isbn> root.isbn:
             root.right = self.insert(root.right, isbn, book_data)
         else:
             return root 
@@ -58,37 +65,92 @@ class BookCatalog: #avl tree
         
         #balance cases:
         #left left case
-        if balance_factor > 1 and isbn < root.left.isbn:
+        if balance_factor> 1 and isbn < root.left.isbn:
             return self.rotate_right(root)
         #right right case
-        if balance_factor < -1 and isbn > root.right.isbn:
-            return self.left_rotate(root)
+        if balance_factor< -1 and isbn > root.right.isbn:
+            return self.rotate_left(root)
         #left right case
-        if balance_factor > 1 and isbn > root.left.isbn:
-            root.left = self.left_rotate(root.left)
-            return self.right_rotate(root)
+        if balance_factor > 1 and isbn >root.left.isbn:
+            root.left = self.rotate_left(root.left)
+            return self.rotate_right(root)
         #right left case
-        if balance_factor < -1 and isbn < root.right.isbn:
-            root.right = self.right_rotate(root.right)
-            return self.left_rotate(root)
+        if balance_factor < -1 and isbn <root.right.isbn:
+            root.right = self.rotate_right(root.right)
+            return self.rotate_left(root)
         
         return root
     
     def search(self,root,isbn):
         if root is None:
             return False
-        if isbn == isbn.key:
+        if isbn == root.isbn:
             return True
-        elif isbn< root.key:
+        elif isbn< root.isbn:
             return self.search(root.left, isbn)
         else:
             return self.search(root.right, isbn)
-
-    result =[]     
-    def inorder_traversal(self, node, result ):
-        if node is None:
+        
+    def search_min(self, root):
+        if root is None:
             return None
-        self.inorder_traversal(node.left, result)
-        result.append(node.isbn)
-        self.inorder_traversal(node.right, result)
+        current = root
+        while current.left:
+            current = current.left
+        return current 
+
+    def inorder_traversal(self, root):
+        result = []
+        stack = []
+        current = root
+    
+        while current or stack:
+            # Reach the leftmost node
+            while current:
+                stack.append(current)
+                current = current.left
+    
+            current = stack.pop()
+            result.append(current.isbn)
+    
+            current = current.right
+    
         return result
+    
+    def delete(self, root, isbn):
+        if not root:
+            return root
+    
+        if isbn < root.isbn:
+            root.left = self.delete(root.left, isbn)
+        elif isbn > root.isbn:
+            root.right = self.delete(root.right, isbn)
+        else:
+            # Node with one or no child
+            if root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+    
+            # Node with two children: get inorder successor
+            temp = self.search_min(root.right)
+            root.isbn = temp.isbn
+            root.book_data = temp.book_data
+            root.right = self.delete(root.right, temp.isbn)
+    
+        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))
+        balance = self.get_balance(root)
+    
+        # Rebalancing after deletion
+        if balance > 1 and self.get_balance(root.left) >= 0:
+            return self.rotate_right(root)
+        if balance > 1 and self.get_balance(root.left) < 0:
+            root.left = self.rotate_left(root.left)
+            return self.rotate_right(root)
+        if balance < -1 and self.get_balance(root.right) <= 0:
+            return self.rotate_left(root)
+        if balance < -1 and self.get_balance(root.right) > 0:
+            root.right = self.rotate_right(root.right)
+            return self.rotate_left(root)
+    
+        return root
