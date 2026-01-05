@@ -7,7 +7,6 @@ class BookNode: #basic variables
         self.height = 1
         
 class BookCatalog: #avl tree
-
     def get_height(self, node):
         if not node:
             return 0
@@ -42,8 +41,23 @@ class BookCatalog: #avl tree
         y.height = 1 + max(self.get_height(y.left), self.get_height(y.right))
         return y #new root
     
+    def _rebalance(self, node):
+        # Update height of the current node
+        node.height = 1 + max(self.get_height(node.left), self.get_height(node.right))
+        balance = self.get_balance(node)
+        # Left Heavy
+        if balance > 1:
+            if self.get_balance(node.left) < 0: # Left-Right Case
+                node.left = self.rotate_left(node.left)
+            return self.rotate_right(node)
+        # Right Heavy
+        if balance < -1:
+            if self.get_balance(node.right) > 0: # Right-Left Case
+                node.right = self.rotate_right(node.right)
+            return self.rotate_left(node)
+        return node
+    
     def insert(self, root, isbn, book_data):
-        #insertion
         if not root:
             return BookNode(isbn, book_data)
         if isbn <root.isbn:
@@ -52,28 +66,32 @@ class BookCatalog: #avl tree
             root.right = self.insert(root.right, isbn, book_data)
         else:
             return root 
-        #rebalance it again
-        root.height = 1 + max(self.get_height(root.left),self.get_height(root.right))
-        balance_factor = self.get_balance(root)
-        
-        #balance cases:
-        #left left case
-        if balance_factor> 1 and isbn < root.left.isbn:
-            return self.rotate_right(root)
-        #right right case
-        if balance_factor< -1 and isbn > root.right.isbn:
-            return self.rotate_left(root)
-        #left right case
-        if balance_factor > 1 and isbn >root.left.isbn:
-            root.left = self.rotate_left(root.left)
-            return self.rotate_right(root)
-        #right left case
-        if balance_factor < -1 and isbn <root.right.isbn:
-            root.right = self.rotate_right(root.right)
-            return self.rotate_left(root)
-        
-        return root
+        #rebalance
+        return self._rebalance(root)
     
+    def delete(self, root, isbn):
+        if not root:
+            return root
+    
+        if isbn < root.isbn:
+            root.left = self.delete(root.left, isbn)
+        elif isbn > root.isbn:
+            root.right = self.delete(root.right, isbn)
+        else:
+            # Node with one or no child
+            if root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+    
+            # Node with two children: get inorder successor
+            temp = self.search_min(root.right)
+            root.isbn = temp.isbn
+            root.book_data = temp.book_data
+            root.right = self.delete(root.right, temp.isbn)
+        #rebalance   
+        return self._rebalance(root)
+        
     def search(self,root,isbn):
         if root is None:
             return False
@@ -109,42 +127,3 @@ class BookCatalog: #avl tree
             current = current.right
     
         return result
-    
-    def delete(self, root, isbn):
-        if not root:
-            return root
-    
-        if isbn < root.isbn:
-            root.left = self.delete(root.left, isbn)
-        elif isbn > root.isbn:
-            root.right = self.delete(root.right, isbn)
-        else:
-            # Node with one or no child
-            if root.left is None:
-                return root.right
-            elif root.right is None:
-                return root.left
-    
-            # Node with two children: get inorder successor
-            temp = self.search_min(root.right)
-            root.isbn = temp.isbn
-            root.book_data = temp.book_data
-            root.right = self.delete(root.right, temp.isbn)
-    
-        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))
-        balance = self.get_balance(root)
-    
-        # Rebalancing after deletion
-        if balance > 1 and self.get_balance(root.left) >= 0:
-            return self.rotate_right(root)
-        if balance > 1 and self.get_balance(root.left) < 0:
-            root.left = self.rotate_left(root.left)
-            return self.rotate_right(root)
-        if balance < -1 and self.get_balance(root.right) <= 0:
-            return self.rotate_left(root)
-        if balance < -1 and self.get_balance(root.right) > 0:
-            root.right = self.rotate_right(root.right)
-            return self.rotate_left(root)
-    
-        return root
-
