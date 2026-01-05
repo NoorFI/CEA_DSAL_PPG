@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jan  5 14:58:36 2026
-
-@author: Fate
-"""
-
 class BookNode: #basic variables
     def __init__ (self , isbn, book_data):
         self.isbn = isbn
@@ -154,3 +147,4 @@ class BookCatalog: #avl tree
             return self.rotate_left(root)
     
         return root
+
