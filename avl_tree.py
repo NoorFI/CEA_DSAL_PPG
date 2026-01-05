@@ -60,13 +60,13 @@ class BookCatalog: #avl tree
             return self.rotate_left(node)
         return node
     
-    def insert(self, root, isbn, book_data):
+    def insert(self, root, isbn, title, author, year, category,copies ):
         if not root:
-            return BookNode(isbn, book_data)
+            return BookNode(isbn, title, author, year, category,copies)
         if isbn <root.isbn:
-            root.left = self.insert(root.left, isbn, book_data)
+            root.left = self.insert(root.left, isbn, title, author, year, category,copies)
         elif isbn> root.isbn:
-            root.right = self.insert(root.right, isbn, book_data)
+            root.right = self.insert(root.right, isbn,title, author, year, category,copies)
         else:
             return root 
         #rebalance
@@ -97,9 +97,9 @@ class BookCatalog: #avl tree
         
     def search(self,root,isbn):
         if root is None:
-            return None
+            return False
         if isbn == root.isbn:
-            return root.book_data
+            return True
         elif isbn< root.isbn:
             return self.search(root.left, isbn)
         else:
