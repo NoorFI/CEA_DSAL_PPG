@@ -97,9 +97,9 @@ class BookCatalog: #avl tree
         
     def search(self,root,isbn):
         if root is None:
-            return False
+            return None
         if isbn == root.isbn:
-            return True
+            return root
         elif isbn< root.isbn:
             return self.search(root.left, isbn)
         else:

@@ -20,8 +20,7 @@ class LibrarySystem:
 
     def add_book(self, isbn, title, author, year, category, copies):
         book = Book(isbn, title, author, year, category, copies)
-
-        self.root = self.catalog.insert(self.root, isbn, book)
+        self.root = self.catalog.insert(self.root, book.isbn, book.title, book.author, book.year, book.category, book.copies)
         self.title_index.insert(title, isbn)
         self.author_index.add(author, isbn)
 
@@ -93,3 +92,4 @@ class LibrarySystem:
 
     def list_all_books(self):
         return self.catalog.inorder_traversal(self.root)
+
