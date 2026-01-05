@@ -15,7 +15,6 @@ class Title:
         self.array=[None]*m 
         self.m=m
         self.n=0
-        self.lf=self.n/self.m
 
     def hashfunc(self, book_t):
          book_t=book_t.strip().lower()
@@ -37,7 +36,6 @@ class Title:
           self.n += 1
           lf=self.n/self.m
           if lf>0.75 :
-               print ("need to resize")   
                self.resize()   
 
     def resize(self):
@@ -108,8 +106,8 @@ class Author:
         current = self.table[index]
 
         while current:
-            if current.book_t == author:
-                new_isbn = ISBNNode(isbn, None, current.isbn)
+            if current.author == author:
+                new_isbn = ISBNNode(isbn, current.isbn_list)
                 current.isbn_list = new_isbn
                 return
             current = current.next
@@ -125,7 +123,7 @@ class Author:
         current = self.table[index]
 
         while current:
-            if current.book_t == author:
+            if current.author == author:
                 return current.isbn_list
             current = current.next
 
