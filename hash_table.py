@@ -149,7 +149,7 @@ class Author:
         return False
 
 class MemberNode:
-    def __init__(self, member_id, name,member_type, borrowed = None, next = None):
+    def __init__(self, member_id, name, member_type, borrowed = None, next = None):
         self.member_id = member_id
         self.name = name
         self.member_type = member_type

@@ -27,8 +27,8 @@ class LibrarySystem:
         self.book_count += 1
         return True
 
-    def add_member(self, member_id, name):
-        return self.members.add(member_id, name)
+    def add_member(self, member_id, name, member_type):
+        return self.members.add(member_id, name, member_type)
 
     def search_by_isbn(self, isbn):
         return self.catalog.search(self.root, isbn)
@@ -84,9 +84,9 @@ if __name__ == "__main__":
     library = LibrarySystem()
 
     print("===== ADD MEMBERS =====")
-    assert library.add_member("2024-EE-001", "Ali") is True
-    assert library.add_member("2024-EE-002", "Sara") is True
-    assert library.add_member("2024-EE-001", "Duplicate") is False
+    assert library.add_member("2024-EE-001", "Ali", "Student") is True
+    assert library.add_member("2024-EE-002", "Sara", "Student") is True
+    assert library.add_member("2024-EE-001", "Duplicate", "Student") is False
     print("Members added successfully")
 
     print("\n===== ADD BOOKS =====")
