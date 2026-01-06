@@ -77,6 +77,30 @@ class LibrarySystem:
 
     def list_all_books(self):
         return self.catalog.inorder_traversal(self.root)
+    
+    def list_books_borrowed_by_member(self, member_id):
+        member = self.members.search(member_id)
+        if not member:
+            return []
+
+        books = []
+        for isbn in member.borrowed:
+            book = self.catalog.search(self.root, isbn)
+            if book:
+                books.append(book)
+        return books
+
+    def list_available_books(self):
+        all_isbns = self.catalog.inorder_traversal(self.root)
+        available_books = []
+
+        for isbn in all_isbns:
+            book = self.catalog.search(self.root, isbn)
+            if book and book.book_data["available_copies"] > 0:
+                available_books.append(book)
+
+        return available_books
+
 
 #testing:
 if __name__ == "__main__":
@@ -154,3 +178,31 @@ if __name__ == "__main__":
 
     print("Return system passed")
 
+    print("\n===== REPORT: BOOKS BORROWED BY MEMBER =====")
+
+    borrowed_books = library.list_books_borrowed_by_member("2024-EE-001")
+    assert len(borrowed_books) == 2  # 3 borrowed, 1 returned earlier
+
+    isbns = [book.isbn for book in borrowed_books]
+    assert "ISBN001" in isbns
+
+    # Non-existent member
+    borrowed_books = library.list_books_borrowed_by_member("INVALID-ID")
+    assert borrowed_books == []
+
+    print("Books borrowed by member report passed")
+
+    print("\n===== REPORT: AVAILABLE BOOKS =====")
+
+    available_books = library.list_available_books()
+
+    available_isbns = [book.isbn for book in available_books]
+
+    # ISBN001 had 3 copies, all borrowed, then 1 returned → 1 available
+    assert "ISBN001" in available_isbns
+
+    # These were never fully borrowed
+    assert "ISBN002" in available_isbns
+    assert "ISBN003" in available_isbns
+
+    print("Available books report passed")
