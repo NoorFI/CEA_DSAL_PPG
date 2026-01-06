@@ -149,9 +149,10 @@ class Author:
         return False
 
 class MemberNode:
-    def __init__(self, member_id, name, borrowed = None, next = None):
+    def __init__(self, member_id, name,member_type = "student", borrowed = None, next = None):
         self.member_id = member_id
         self.name = name
+        self.member_type = member_type
         self.borrowed = borrowed if borrowed else []
         self.next = next
 
@@ -170,7 +171,7 @@ class Member:
 
         return sum % self.m
     
-    def add(self, member_id, name):
+    def add(self, member_id, name, member_type="student"):
         index = self.hashfunc(member_id)
         current = self.table[index]
 
@@ -180,7 +181,7 @@ class Member:
                 return False
             current = current.next
         
-        new_node = MemberNode(member_id, name, next=self.table[index])
+        new_node = MemberNode(member_id, name,member_type, next=self.table[index])
         self.table[index] = new_node
         self.n += 1
         return True
