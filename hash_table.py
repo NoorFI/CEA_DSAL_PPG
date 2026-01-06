@@ -171,7 +171,9 @@ class Member:
 
         return sum % self.m
     
-    def add(self, member_id, name, member_type="student"):
+    def add(self, member_id, name, member_type):
+        if self.n > 50:
+            return False
         index = self.hashfunc(member_id)
         current = self.table[index]
 
@@ -181,7 +183,7 @@ class Member:
                 return False
             current = current.next
         
-        new_node = MemberNode(member_id, name,member_type, next=self.table[index])
+        new_node = MemberNode(member_id, name,member_type, self.table[index])
         self.table[index] = new_node
         self.n += 1
         return True
