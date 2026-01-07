@@ -11,11 +11,6 @@ The provided testss.py script covers:
 - Reporting and edge cases
 
 Group:
-Member 1: Shafia Ashfaq 2024-EE-102
-Contribution: Wrote hash_table.py
-
-Member 2: Fatima Mubashar Gondal 2024-EE-107
-Contribution: Wrote avl_tree.py
-
-Member 3: Noor Fatima 2024-EE-108
-Contribution: Wrote library_system.py
+1. Member 1: Shafia Ashfaq 2024-EE-102 Contribution: Wrote hash_table.py
+2. Member 2: Fatima Mubashar Gondal 2024-EE-107 Contribution: Wrote avl_tree.py
+3. Member 3: Noor Fatima 2024-EE-108 Contribution: Wrote library_system.py
