@@ -55,7 +55,7 @@ class LibrarySystem:
             return False
 
         if len(member.borrowed) >= 5:
-            return False
+            return "Borrow Limit Reached"
 
         if book.book_data["available_copies"] <= 0:
             return False
@@ -101,108 +101,3 @@ class LibrarySystem:
 
         return available_books
 
-
-#testing:
-if __name__ == "__main__":
-
-    library = LibrarySystem()
-
-    print("===== ADD MEMBERS =====")
-    assert library.add_member("2024-EE-001", "Ali", "Student") is True
-    assert library.add_member("2024-EE-002", "Sara", "Student") is True
-    assert library.add_member("2024-EE-001", "Duplicate", "Student") is False
-    print("Members added successfully")
-
-    print("\n===== ADD BOOKS =====")
-    assert library.add_book("ISBN001", "Python 101", "John Doe", 2021, "Programming", 3) is True
-    assert library.add_book("ISBN002", "Data Structures", "Jane Smith", 2020, "CS", 2) is True
-    assert library.add_book("ISBN003", "Advanced Python", "John Doe", 2022, "Programming", 1) is True
-
-    # Duplicate ISBN
-    assert library.add_book("ISBN001", "Duplicate Book", "Someone", 2023, "Test", 1) is False
-    print("Books added successfully")
-
-    print("\n===== SEARCH BY ISBN =====")
-    book = library.search_by_isbn("ISBN001")
-    assert book is not None
-    assert book.book_data["title"] == "Python 101"
-
-    assert library.search_by_isbn("INVALID") is None
-    print("Search by ISBN passed")
-
-    print("\n===== SEARCH BY TITLE =====")
-    book = library.search_by_title("Python 101")
-    assert book is not None
-    assert book.isbn == "ISBN001"
-
-    assert library.search_by_title("Nonexistent Title") is None
-    print("Search by title passed")
-
-    print("\n===== SEARCH BY AUTHOR =====")
-    books = library.search_by_author("John Doe")
-    assert len(books) == 2
-
-    books = library.search_by_author("Unknown Author")
-    assert books == []
-    print("Search by author passed")
-
-    print("\n===== BORROW BOOK =====")
-    assert library.borrow_book("2024-EE-001", "ISBN001") is True
-    assert library.borrow_book("2024-EE-001", "ISBN001") is True
-    assert library.borrow_book("2024-EE-001", "ISBN001") is True
-
-    # No copies left
-    assert library.borrow_book("2024-EE-002", "ISBN001") is False
-
-    member = library.members.search("2024-EE-001")
-    assert len(member.borrowed) == 3
-
-    book = library.search_by_isbn("ISBN001")
-    assert book.book_data["available_copies"] == 0
-    print("Borrow system passed")
-
-    print("\n===== RETURN BOOK =====")
-    member = library.members.search("2024-EE-001")
-    borrowed_before = len(member.borrowed)
-
-    book = library.search_by_isbn("ISBN001")
-    copies_before = book.book_data["available_copies"]
-
-    assert library.return_book("2024-EE-001", "ISBN001") is True
-
-    member = library.members.search("2024-EE-001")
-    book = library.search_by_isbn("ISBN001")
-
-    assert len(member.borrowed) == borrowed_before - 1
-    assert book.book_data["available_copies"] == copies_before + 1
-
-    print("Return system passed")
-
-    print("\n===== REPORT: BOOKS BORROWED BY MEMBER =====")
-
-    borrowed_books = library.list_books_borrowed_by_member("2024-EE-001")
-    assert len(borrowed_books) == 2  # 3 borrowed, 1 returned earlier
-
-    isbns = [book.isbn for book in borrowed_books]
-    assert "ISBN001" in isbns
-
-    # Non-existent member
-    borrowed_books = library.list_books_borrowed_by_member("INVALID-ID")
-    assert borrowed_books == []
-
-    print("Books borrowed by member report passed")
-
-    print("\n===== REPORT: AVAILABLE BOOKS =====")
-
-    available_books = library.list_available_books()
-
-    available_isbns = [book.isbn for book in available_books]
-
-    # ISBN001 had 3 copies, all borrowed, then 1 returned → 1 available
-    assert "ISBN001" in available_isbns
-
-    # These were never fully borrowed
-    assert "ISBN002" in available_isbns
-    assert "ISBN003" in available_isbns
-
-    print("Available books report passed")

@@ -183,7 +183,7 @@ class Member:
                 return False
             current = current.next
         
-        new_node = MemberNode(member_id, name,member_type, self.table[index])
+        new_node = MemberNode(member_id, name,member_type, [], self.table[index])
         self.table[index] = new_node
         self.n += 1
         return True
